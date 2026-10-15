@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Документы для оформления — FBSM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --fon: #f3f5f2;
+  --list: #ffffff;
+  --tekst: #17201d;
+  --tusk: #5b6762;
+  --liniya: #d8ddd8;
+  --shtamp: #0f6b5c;
+  --shtamp-svet: #e2f0ec;
+  --vnimanie: #a4501a;
+  --vnimanie-svet: #fbeee4;
+  --oshibka: #b42318;
+  --radius: 10px;
+  --shrift: "Golos Text", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fon: #121815;
+    --list: #1b231f;
+    --tekst: #e8eeea;
+    --tusk: #9aa8a1;
+    --liniya: #2e3a35;
+    --shtamp: #4fb8a3;
+    --shtamp-svet: #16302a;
+    --vnimanie: #e59a62;
+    --vnimanie-svet: #33241a;
+    --oshibka: #f07a6f;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--fon); color: var(--tekst);
+  font: 400 16px/1.5 var(--shrift);
+  padding: 0 16px calc(32px + env(safe-area-inset-bottom));
+}
+main { max-width: 560px; margin: 0 auto; }
+h1 { font-size: 24px; line-height: 1.25; font-weight: 700; margin: 0 0 8px; text-wrap: balance; }
+h2 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+p { margin: 0 0 12px; }
+.metka { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--tusk); font-weight: 600; }
+.shapka { padding: 28px 0 8px; }
+.tusk { color: var(--tusk); font-size: 14px; }
+
+/* Шкала: по клетке на каждый пункт. */
+.shkala { position: sticky; top: 0; z-index: 2; background: var(--fon); padding: 12px 0; margin-bottom: 8px; }
+.shkala-verh { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.schet { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.schet span { color: var(--tusk); font-size: 18px; font-weight: 500; }
+.kletki { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+.kletka { height: 8px; border-radius: 2px; background: var(--liniya); transition: background .3s; }
+.kletka.da { background: var(--shtamp); }
+
+.blok { background: var(--list); border: 1px solid var(--liniya); border-radius: var(--radius); padding: 20px 16px; margin-bottom: 16px; }
+.blok > p.tusk { margin-bottom: 16px; }
+label.pole { display: block; margin-bottom: 14px; }
+label.pole > span { display: block; font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+input[type=text], input[type=tel], input[type=email], input[type=date], select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--tekst);
+  background: var(--list); border: 1px solid var(--liniya); border-radius: 8px;
+}
+input.ii { border-color: var(--shtamp); background: var(--shtamp-svet); }
+input:focus-visible, select:focus-visible, button:focus-visible, .knopka-fayl:focus-within {
+  outline: 3px solid var(--shtamp); outline-offset: 2px;
+}
+.podskazka-ii { font-size: 13px; color: var(--shtamp); margin: -8px 0 12px; }
+
+button, .knopka-fayl {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 18px; border-radius: 8px; font: 600 16px/1 var(--shrift);
+  cursor: pointer; border: 1px solid transparent;
+}
+.glavnaya { background: var(--shtamp); color: #fff; width: 100%; }
+@media (prefers-color-scheme: dark) { .glavnaya { color: #0b1210; } }
+.vtorostep { background: transparent; color: var(--shtamp); border-color: var(--shtamp); }
+button[disabled] { opacity: .55; cursor: progress; }
+
+.dok { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--liniya); }
+.dok:first-of-type { border-top: 0; }
+.dok-nazv { font-weight: 500; }
+.dok-podsk { grid-column: 1; font-size: 13px; color: var(--tusk); }
+.status { grid-column: 1; font-size: 13px; font-weight: 600; }
+.status.da { color: var(--shtamp); }
+.status.net { color: var(--tusk); font-weight: 500; }
+.knopka-fayl { grid-column: 2; grid-row: 1 / span 3; background: transparent; color: var(--shtamp); border-color: var(--shtamp); padding: 0 14px; font-size: 15px; position: relative; }
+.knopka-fayl.zagruzka { opacity: .6; pointer-events: none; }
+.knopka-fayl input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.zamechanie { grid-column: 1 / -1; background: var(--vnimanie-svet); color: var(--vnimanie); border-radius: 6px; padding: 8px 10px; font-size: 14px; }
+
+.soglasie label { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; font-size: 15px; }
+.soglasie input { width: 24px; height: 24px; flex: none; margin-top: 2px; accent-color: var(--shtamp); }
+
+.soobshenie { padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 15px; }
+.soobshenie.ok { background: var(--shtamp-svet); color: var(--shtamp); }
+.soobshenie.oshibka { background: var(--vnimanie-svet); color: var(--oshibka); }
+.gotovo { text-align: center; padding: 28px 16px; }
+.gotovo strong { display: block; font-size: 20px; margin-bottom: 6px; color: var(--shtamp); }
+[hidden] { display: none !important; }
+.zagl { color: var(--tusk); padding: 48px 0; text-align: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="shapka">
+    <div class="metka">FBSM · оформление на работу</div>
+    <h1 id="privet">Документы для оформления</h1>
+    <p class="tusk">Сфотографируйте документ и загрузите его здесь. Каждый сохраняется сразу — можно закрыть страницу и вернуться позже по этой же ссылке.</p>
+  </header>
+
+  <div id="zagruzka" class="zagl" hidden>Открываем вашу анкету…</div>
+  <div id="oshibka-vhoda" class="blok" hidden>
+    <h2>Не получилось открыть анкету</h2>
+    <p id="oshibka-tekst" class="tusk"></p>
+    <button class="vtorostep" id="povtor" type="button">Попробовать ещё раз</button>
+  </div>
+
+  <div id="anketa" hidden>
+    <div class="shkala" aria-live="polite">
+      <div class="shkala-verh">
+        <div class="schet"><b id="sdano">0</b> <span>из <b id="vsego">12</b> сдано</span></div>
+        <div class="tusk" id="stadiya"></div>
+      </div>
+      <div class="kletki" id="kletki"></div>
+    </div>
+
+    <div id="obshee" class="soobshenie" role="status" hidden></div>
+
+    <section class="blok soglasie" id="blok-soglasie" hidden>
+      <h2>Перед началом</h2>
+      <p class="tusk">Документы и данные нужны для трудового договора и приказа о приёме. Их увидят только HR, бухгалтер и ваш руководитель.</p>
+      <label>
+        <input type="checkbox" id="galka-soglasie">
+        <span>Я согласен(на) на сбор и обработку моих персональных данных для оформления трудовых отношений с FBSM в соответствии с Законом РК «О персональных данных и их защите».</span>
+      </label>
+      <button class="glavnaya" id="knopka-soglasie" type="button" disabled>Продолжить</button>
+    </section>
+
+    <div id="osnova" hidden>
+      <section class="blok" aria-labelledby="z-stazh">
+        <h2 id="z-stazh">Для стажировки</h2>
+        <p class="tusk">Это нужно до первого дня стажировки.</p>
+        <label class="pole"><span>Фамилия, имя, отчество</span><input type="text" data-pole="fio" autocomplete="name"></label>
+        <label class="pole"><span>Телефон</span><input type="tel" data-pole="phone" autocomplete="tel" inputmode="tel"></label>
+        <label class="pole"><span>Электронная почта</span><input type="email" data-pole="email" autocomplete="email" inputmode="email"></label>
+        <div id="dok-udo"></div>
+        <p class="podskazka-ii" id="ii-udo" hidden>Заполнено по фото удостоверения — проверьте и сохраните.</p>
+        <label class="pole"><span>ИИН</span><input type="text" data-pole="iin" inputmode="numeric" maxlength="12"></label>
+        <label class="pole"><span>№ удостоверения</span><input type="text" data-pole="idNum" inputmode="numeric" maxlength="9"></label>
+        <label class="pole"><span>Дата выдачи удостоверения</span><input type="date" data-pole="idDate"></label>
+        <button class="glavnaya" type="button" data-sohranit="fio,phone,email,iin,idNum,idDate">Сохранить данные</button>
+      </section>
+
+      <section class="blok" aria-labelledby="z-oform">
+        <h2 id="z-oform">Для оформления</h2>
+        <p class="tusk">Справки можно сдавать по мере получения.</p>
+        <label class="pole"><span>Адрес проживания</span><input type="text" data-pole="adres" autocomplete="street-address"></label>
+        <div id="dok-schet"></div>
+        <p class="podskazka-ii" id="ii-schet" hidden>Заполнено по справке банка — проверьте и сохраните.</p>
+        <label class="pole"><span>Номер счёта (IBAN)</span><input type="text" data-pole="iban" autocapitalize="characters" maxlength="24"></label>
+        <label class="pole"><span>Банк</span><select data-pole="bank" id="vybor-banka"><option value="">— выберите —</option></select></label>
+        <button class="glavnaya" type="button" data-sohranit="adres,iban,bank">Сохранить данные</button>
+      </section>
+
+      <section class="blok" aria-labelledby="z-doki">
+        <h2 id="z-doki">Справки и документы</h2>
+        <div id="spisok-dokov"></div>
+      </section>
+
+      <section class="blok gotovo" id="vse-sdano" hidden>
+        <strong>Всё сдано</strong>
+        <span class="tusk">Спасибо! HR и бухгалтер займутся оформлением.</span>
+      </section>
+    </div>
+    <p class="tusk">Вопросы по документам — к HR-менеджеру.</p>
+  </div>
+</main>
+
+<script>
+(() => {
+  const API = "https://qeehxcnnuzuwskznhdyg.supabase.co/functions/v1/anketa";
+  const K = new URLSearchParams(location.search).get("k") || "";
+  const $ = (s) => document.querySelector(s);
+  let st = null;
+
+  async function zapros(telo) {
+    const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ k: K, ...telo }) });
+    let j = {};
+    try { j = await r.json(); } catch { /* ответ не JSON */ }
+    if (!r.ok || !j.ok) throw new Error(j.error || "Нет связи. Проверьте интернет и попробуйте ещё раз.");
+    return j;
+  }
+
+  function soobshit(tekst, vid) {
+    const el = $("#obshee");
+    el.textContent = tekst; el.className = "soobshenie " + vid; el.hidden = !tekst;
+    if (tekst && vid === "oshibka") el.scrollIntoView({ block: "center", behavior: "smooth" });
+    clearTimeout(soobshit.t);
+    if (vid === "ok") soobshit.t = setTimeout(() => { el.hidden = true; }, 4000);
+  }
+
+  function risovatShkalu() {
+    $("#sdano").textContent = st.progress.sdano;
+    $("#vsego").textContent = st.progress.vsego;
+    $("#stadiya").textContent = st.stadiya ? "Этап: " + st.stadiya.toLowerCase() : "";
+    const k = $("#kletki");
+    k.style.gridTemplateColumns = `repeat(${st.progress.vsego}, 1fr)`;
+    k.innerHTML = "";
+    for (let i = 0; i < st.progress.vsego; i++) {
+      const d = document.createElement("div");
+      d.className = "kletka" + (i < st.progress.sdano ? " da" : "");
+      k.append(d);
+    }
+    $("#vse-sdano").hidden = st.progress.net.length > 0;
+  }
+
+  function strokaDoka(d) {
+    const div = document.createElement("div");
+    div.className = "dok"; div.dataset.dok = d.key;
+    const sdano = d.count > 0;
+    const nazv = document.createElement("div"); nazv.className = "dok-nazv"; nazv.textContent = d.title;
+    div.append(nazv);
+    if (d.hint) { const p = document.createElement("div"); p.className = "dok-podsk"; p.textContent = d.hint; div.append(p); }
+    const s = document.createElement("div");
+    s.className = "status " + (sdano ? "da" : "net");
+    s.textContent = sdano ? (d.count > 1 ? `Сдано · файлов: ${d.count}` : "Сдано") : "Не сдано";
+    div.append(s);
+    const lab = document.createElement("label"); lab.className = "knopka-fayl";
+    lab.textContent = sdano ? (d.multi ? "Добавить" : "Заменить") : "Загрузить";
+    const inp = document.createElement("input");
+    inp.type = "file"; inp.accept = "image/*,application/pdf"; inp.multiple = d.multi;
+    inp.setAttribute("aria-label", (sdano ? "Добавить файл: " : "Загрузить: ") + d.title);
+    inp.addEventListener("change", () => { if (inp.files.length) zagruzit(d, [...inp.files], lab); inp.value = ""; });
+    lab.append(inp);
+    div.append(lab);
+    return div;
+  }
+
+  function risovat() {
+    if (st.imya) $("#privet").textContent = `Здравствуйте, ${st.imya}!`;
+    risovatShkalu();
+    $("#blok-soglasie").hidden = st.soglasie;
+    $("#osnova").hidden = !st.soglasie;
+    const sel = $("#vybor-banka");
+    if (sel.options.length === 1) for (const b of st.banki) sel.add(new Option(b.name, b.id));
+    for (const el of document.querySelectorAll("[data-pole]")) {
+      // Не затираем то, что человек ввёл или ИИ подсказал, пока это не сохранено.
+      if (el.classList.contains("ii") || el.dataset.izm) continue;
+      if (document.activeElement === el) continue;
+      const v = st.polya[el.dataset.pole];
+      el.value = v == null ? "" : String(v);
+    }
+    const poKlyuchu = Object.fromEntries(st.doki.map((d) => [d.key, d]));
+    $("#dok-udo").replaceChildren(strokaDoka(poKlyuchu.udo));
+    $("#dok-schet").replaceChildren(strokaDoka(poKlyuchu.schet));
+    $("#spisok-dokov").replaceChildren(...st.doki.filter((d) => d.key !== "udo" && d.key !== "schet").map(strokaDoka));
+  }
+
+  // Фото ужимаем до 2000 px по длинной стороне — быстрее грузится с телефона.
+  async function podgotovit(file) {
+    const vB64 = (blob) => new Promise((ok, ne) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1]); r.onerror = ne; r.readAsDataURL(blob); });
+    if (file.type === "application/pdf") {
+      if (file.size > 10 * 1024 * 1024) throw new Error("PDF больше 10 МБ — сфотографируйте страницы вместо него.");
+      return { name: file.name, mime: file.type, b64: await vB64(file) };
+    }
+    try {
+      const bmp = await createImageBitmap(file);
+      const m = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(bmp.width * m); c.height = Math.round(bmp.height * m);
+      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+      const blob = await new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.85));
+      return { name: file.name.replace(/\.[^.]+$/, "") + ".jpg", mime: "image/jpeg", b64: await vB64(blob) };
+    } catch {
+      if (file.size > 10 * 1024 * 1024) throw new Error("Фото больше 10 МБ — сделайте снимок заново.");
+      return { name: file.name, mime: file.type || "image/jpeg", b64: await vB64(file) };
+    }
+  }
+
+  async function zagruzit(d, files, lab) {
+    lab.classList.add("zagruzka"); lab.firstChild.textContent = "Загружаем…";
+    try {
+      const gotovye = [];
+      for (const f of files.slice(0, 4)) gotovye.push(await podgotovit(f));
+      if ((d.key === "udo" || d.key === "schet") && st.ii) lab.firstChild.textContent = "Читаем документ…";
+      const j = await zapros({ action: "fayl", dok: d.key, files: gotovye });
+      st = j; risovat();
+      if (j.predlozhenie) prinyatPredlozhenie(d.key, j.predlozhenie);
+      const stroka = document.querySelector(`[data-dok="${d.key}"]`);
+      if (j.zamechanie && stroka) {
+        const z = document.createElement("div"); z.className = "zamechanie"; z.textContent = j.zamechanie; stroka.append(z);
+      }
+      soobshit(j.zamechanie ? "" : `«${d.title}» сохранено.`, "ok");
+    } catch (e) {
+      soobshit(e.message, "oshibka");
+      risovat();
+    }
+  }
+
+  function prinyatPredlozhenie(dok, p) {
+    let est = false;
+    for (const [k, v] of Object.entries(p)) {
+      if (v === null || v === "") continue;
+      const el = document.querySelector(`[data-pole="${k}"]`);
+      if (!el) continue;
+      el.value = String(v); el.classList.add("ii"); est = true;
+    }
+    $("#ii-" + dok).hidden = !est;
+  }
+
+  async function sohranit(btn) {
+    const klyuchi = btn.dataset.sohranit.split(",");
+    const polya = {};
+    for (const k of klyuchi) polya[k] = document.querySelector(`[data-pole="${k}"]`).value;
+    btn.disabled = true; const bylo = btn.textContent; btn.textContent = "Сохраняем…";
+    try {
+      st = await zapros({ action: "polya", polya });
+      for (const k of klyuchi) {
+        const el = document.querySelector(`[data-pole="${k}"]`);
+        el.classList.remove("ii"); delete el.dataset.izm;
+      }
+      for (const id of ["#ii-udo", "#ii-schet"]) $(id).hidden = true;
+      risovat();
+      soobshit("Данные сохранены.", "ok");
+    } catch (e) {
+      soobshit(e.message, "oshibka");
+    } finally {
+      btn.disabled = false; btn.textContent = bylo;
+    }
+  }
+
+  async function otkryt() {
+    $("#oshibka-vhoda").hidden = true;
+    const t = setTimeout(() => { $("#zagruzka").hidden = false; }, 300);
+    try {
+      if (!K) throw new Error("В ссылке нет кода. Откройте её из сообщения целиком.");
+      st = await zapros({ action: "sostoyanie" });
+      $("#anketa").hidden = false; risovat();
+    } catch (e) {
+      $("#oshibka-tekst").textContent = e.message; $("#oshibka-vhoda").hidden = false;
+    } finally {
+      clearTimeout(t); $("#zagruzka").hidden = true;
+    }
+  }
+
+  $("#povtor").addEventListener("click", otkryt);
+  $("#galka-soglasie").addEventListener("change", (e) => { $("#knopka-soglasie").disabled = !e.target.checked; });
+  $("#knopka-soglasie").addEventListener("click", async (e) => {
+    e.target.disabled = true;
+    try { st = await zapros({ action: "soglasie" }); risovat(); } catch (er) { soobshit(er.message, "oshibka"); e.target.disabled = false; }
+  });
+  for (const b of document.querySelectorAll("[data-sohranit]")) b.addEventListener("click", () => sohranit(b));
+  for (const el of document.querySelectorAll("[data-pole]")) {
+    el.addEventListener("input", () => { el.classList.remove("ii"); el.dataset.izm = "1"; });
+  }
+  otkryt();
+})();
+</script>
+</body>
+</html>
