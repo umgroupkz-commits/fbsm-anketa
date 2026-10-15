@@ -154,11 +154,12 @@ button[disabled] { opacity: .55; cursor: progress; }
         <label class="pole"><span>Телефон</span><input type="tel" data-pole="phone" autocomplete="tel" inputmode="tel"></label>
         <label class="pole"><span>Электронная почта</span><input type="email" data-pole="email" autocomplete="email" inputmode="email"></label>
         <div id="dok-udo"></div>
-        <p class="podskazka-ii" id="ii-udo" hidden>Заполнено по фото удостоверения — проверьте и сохраните.</p>
+        <p class="podskazka-ii" id="ii-udo" hidden></p>
         <label class="pole"><span>ИИН</span><input type="text" data-pole="iin" inputmode="numeric" maxlength="12"></label>
         <label class="pole"><span>№ удостоверения</span><input type="text" data-pole="idNum" inputmode="numeric" maxlength="9"></label>
         <label class="pole"><span>Дата выдачи удостоверения</span><input type="date" data-pole="idDate"></label>
-        <button class="glavnaya" type="button" data-sohranit="fio,phone,email,iin,idNum,idDate">Сохранить данные</button>
+        <label class="pole"><span>Дата рождения</span><input type="date" data-pole="birth" autocomplete="bday"></label>
+        <button class="glavnaya" type="button" data-sohranit="fio,phone,email,iin,idNum,idDate,birth">Сохранить данные</button>
       </section>
 
       <section class="blok" aria-labelledby="z-oform">
@@ -166,7 +167,7 @@ button[disabled] { opacity: .55; cursor: progress; }
         <p class="tusk">Справки можно сдавать по мере получения.</p>
         <label class="pole"><span>Адрес проживания</span><input type="text" data-pole="adres" autocomplete="street-address"></label>
         <div id="dok-schet"></div>
-        <p class="podskazka-ii" id="ii-schet" hidden>Заполнено по справке банка — проверьте и сохраните.</p>
+        <p class="podskazka-ii" id="ii-schet" hidden></p>
         <label class="pole"><span>Номер счёта (IBAN)</span><input type="text" data-pole="iban" autocapitalize="characters" maxlength="24"></label>
         <label class="pole"><span>Банк</span><select data-pole="bank" id="vybor-banka"><option value="">— выберите —</option></select></label>
         <button class="glavnaya" type="button" data-sohranit="adres,iban,bank">Сохранить данные</button>
@@ -233,7 +234,7 @@ button[disabled] { opacity: .55; cursor: progress; }
     if (d.hint) { const p = document.createElement("div"); p.className = "dok-podsk"; p.textContent = d.hint; div.append(p); }
     const s = document.createElement("div");
     s.className = "status " + (sdano ? "da" : "net");
-    s.textContent = sdano ? (d.count > 1 ? `Сдано · файлов: ${d.count}` : "Сдано") : "Не сдано";
+    s.textContent = sdano ? (d.count > 1 ? `Сдано · файлов: ${d.count}` : "Сдано") : (d.neobyazatelno ? "Не обязательно — если есть" : "Не сдано");
     div.append(s);
     const lab = document.createElement("label"); lab.className = "knopka-fayl";
     lab.textContent = sdano ? (d.multi ? "Добавить" : "Заменить") : "Загрузить";
@@ -295,7 +296,7 @@ button[disabled] { opacity: .55; cursor: progress; }
       if ((d.key === "udo" || d.key === "schet") && st.ii) lab.firstChild.textContent = "Читаем документ…";
       const j = await zapros({ action: "fayl", dok: d.key, files: gotovye });
       st = j; risovat();
-      if (j.predlozhenie) prinyatPredlozhenie(d.key, j.predlozhenie);
+      if (j.predlozhenie) prinyatPredlozhenie(d.key, j.predlozhenie, j.sohraneno);
       const stroka = document.querySelector(`[data-dok="${d.key}"]`);
       if (j.zamechanie && stroka) {
         const z = document.createElement("div"); z.className = "zamechanie"; z.textContent = j.zamechanie; stroka.append(z);
@@ -307,15 +308,23 @@ button[disabled] { opacity: .55; cursor: progress; }
     }
   }
 
-  function prinyatPredlozhenie(dok, p) {
-    let est = false;
+  // Проверенное ИИ уже сохранило в карточку — его просто подсвечиваем. Что
+  // отличается от сохранённого (например, ФИО, заведённое HR), ждёт кнопки.
+  function prinyatPredlozhenie(dok, p, sohraneno) {
+    let est = false, neSohraneno = 0;
     for (const [k, v] of Object.entries(p)) {
       if (v === null || v === "") continue;
       const el = document.querySelector(`[data-pole="${k}"]`);
       if (!el) continue;
-      el.value = String(v); el.classList.add("ii"); est = true;
+      if (!sohraneno || String(st.polya[k] ?? "") !== String(v)) { el.value = String(v); el.dataset.izm = "1"; neSohraneno++; }
+      el.classList.add("ii"); est = true;
     }
-    $("#ii-" + dok).hidden = !est;
+    const note = $("#ii-" + dok);
+    const otkuda = dok === "udo" ? "по фото удостоверения" : "по справке банка";
+    note.textContent = neSohraneno
+      ? `Заполнено ${otkuda}. Проверьте подсвеченные поля и нажмите «Сохранить данные».`
+      : `Заполнено ${otkuda} и уже сохранено — проверьте. Если есть ошибка, исправьте и нажмите «Сохранить данные».`;
+    note.hidden = !est;
   }
 
   async function sohranit(btn) {
