@@ -103,15 +103,17 @@ button[disabled] { opacity: .55; cursor: progress; }
 .soobshenie { padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 15px; }
 .soobshenie.ok { background: var(--shtamp-svet); color: var(--shtamp); }
 .soobshenie.oshibka { background: var(--vnimanie-svet); color: var(--oshibka); }
-.pamyatka summary { cursor: pointer; font-weight: 600; font-size: 17px; color: var(--shtamp); list-style: none; display: flex; justify-content: space-between; gap: 12px; }
-.pamyatka summary::-webkit-details-marker { display: none; }
-.pamyatka summary::after { content: "Открыть"; font-size: 14px; font-weight: 500; }
-.pamyatka[open] summary::after { content: "Свернуть"; }
-.pamyatka ol { margin: 16px 0 0; padding-left: 22px; display: grid; gap: 14px; }
-.pamyatka li b { display: block; }
-.pamyatka li p { margin: 2px 0 0; font-size: 15px; }
-.pamyatka a { color: var(--shtamp); font-weight: 500; overflow-wrap: anywhere; }
-.pamyatka .ssylki { display: grid; gap: 6px; margin-top: 6px; }
+/* Памятка стажёра: заметная кнопка над анкетой и окно поверх неё, анкета под окном не теряется. */
+.knopka-pamyatki {
+  width: 100%; justify-content: flex-start; text-align: left; gap: 12px; margin-bottom: 16px; padding: 14px 16px;
+  background: var(--shtamp-svet); color: var(--shtamp); border: 2px solid var(--shtamp); font-size: 16px; line-height: 1.3;
+}
+.knopka-pamyatki .znak { font-size: 24px; flex: none; }
+.knopka-pamyatki small { display: block; font-weight: 500; font-size: 13px; color: var(--tusk); margin-top: 2px; }
+.okno { position: fixed; inset: 0; z-index: 10; background: var(--fon); display: flex; flex-direction: column; }
+.okno-verh { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--liniya); background: var(--list); }
+.okno-verh .vtorostep { min-height: 40px; }
+.okno iframe { flex: 1; width: 100%; border: 0; background: #fff; }
 .gotovo { text-align: center; padding: 28px 16px; }
 .gotovo strong { display: block; font-size: 20px; margin-bottom: 6px; color: var(--shtamp); }
 [hidden] { display: none !important; }
@@ -145,6 +147,11 @@ button[disabled] { opacity: .55; cursor: progress; }
 
     <div id="obshee" class="soobshenie" role="status" hidden></div>
 
+    <button class="knopka-pamyatki" id="knopka-pamyatki" type="button" hidden>
+      <span class="znak" aria-hidden="true">📋</span>
+      <span>Что делать после анкеты: памятка стажёра<small>Задачи в Битрикс24, вход в программу, рабочие чаты</small></span>
+    </button>
+
     <section class="blok soglasie" id="blok-soglasie" hidden>
       <h2>Перед началом</h2>
       <p class="tusk">Документы и данные нужны для трудового договора и приказа о приёме. Их увидят только HR, бухгалтер и ваш руководитель.</p>
@@ -156,13 +163,6 @@ button[disabled] { opacity: .55; cursor: progress; }
     </section>
 
     <div id="osnova" hidden>
-      <details class="blok pamyatka" id="pamyatka" hidden>
-        <summary id="pamyatka-zagolovok">Первые шаги</summary>
-        <p class="tusk" id="pamyatka-vvod"></p>
-        <ol id="pamyatka-shagi"></ol>
-        <p class="tusk" id="pamyatka-red"></p>
-      </details>
-
       <section class="blok" aria-labelledby="z-stazh">
         <h2 id="z-stazh">Для стажировки</h2>
         <p class="tusk">Это нужно до первого дня стажировки.</p>
@@ -202,6 +202,14 @@ button[disabled] { opacity: .55; cursor: progress; }
     <p class="tusk">Вопросы по документам — к HR-менеджеру.</p>
   </div>
 </main>
+
+<div class="okno" id="pamyatka-okno" role="dialog" aria-modal="true" aria-labelledby="okno-zag" hidden>
+  <div class="okno-verh">
+    <b id="okno-zag">Памятка стажёра</b>
+    <button class="vtorostep" id="okno-zakryt" type="button">Вернуться к анкете</button>
+  </div>
+  <iframe id="okno-ramka" title="Памятка стажёра" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
+</div>
 
 <script>
 (() => {
@@ -263,32 +271,34 @@ button[disabled] { opacity: .55; cursor: progress; }
     return div;
   }
 
-  // Памятку присылают только ответы на открытие и согласие; после сохранений блок остаётся как был.
+  // Флаг памятки приходит только с открытием и согласием; после сохранений кнопка остаётся как была.
   function risovatPamyatku() {
-    if (!("pamyatka" in st)) return;
-    const p = st.pamyatka;
-    $("#pamyatka").hidden = !p;
-    if (!p) return;
-    $("#pamyatka-zagolovok").textContent = p.zagolovok;
-    $("#pamyatka-vvod").textContent = p.vvod;
-    $("#pamyatka-red").textContent = p.red ? `Памятка стажёру FBSM, ${p.red}` : "";
-    const ol = $("#pamyatka-shagi");
-    ol.replaceChildren();
-    for (const s of p.shagi) {
-      const li = document.createElement("li");
-      const b = document.createElement("b"); b.textContent = s.zagolovok; li.append(b);
-      for (const t of s.tekst) { const pr = document.createElement("p"); pr.textContent = t; li.append(pr); }
-      if (s.ssylki.length) {
-        const box = document.createElement("div"); box.className = "ssylki";
-        for (const l of s.ssylki) {
-          const a = document.createElement("a");
-          a.href = l.url; a.textContent = l.tekst; a.target = "_blank"; a.rel = "noopener noreferrer";
-          box.append(a);
-        }
-        li.append(box);
-      }
-      ol.append(li);
+    if ("pamyatka" in st) $("#knopka-pamyatki").hidden = !st.pamyatka;
+  }
+
+  // Сама памятка - страница чата «Инструкции»: приходит по личной ссылке и показывается в рамке без скриптов.
+  let pamyatkaHtml = "";
+  async function otkrytPamyatku() {
+    const kn = $("#knopka-pamyatki");
+    kn.disabled = true;
+    try {
+      if (!pamyatkaHtml) pamyatkaHtml = (await zapros({ action: "pamyatka" })).html;
+      // Ссылки памятки уходят наружу: t.me и звонок внутри рамки не открываются.
+      $("#okno-ramka").srcdoc = pamyatkaHtml.replace(/<head([^>]*)>/i, '<head$1><base target="_blank">');
+      $("#pamyatka-okno").hidden = false;
+      document.body.style.overflow = "hidden";
+      $("#okno-zakryt").focus();
+    } catch (er) {
+      soobshit(er.message, "oshibka");
+    } finally {
+      kn.disabled = false;
     }
+  }
+  function zakrytPamyatku() {
+    if ($("#pamyatka-okno").hidden) return;
+    $("#pamyatka-okno").hidden = true;
+    document.body.style.overflow = "";
+    $("#knopka-pamyatki").focus();
   }
 
   function risovat() {
@@ -408,6 +418,9 @@ button[disabled] { opacity: .55; cursor: progress; }
   }
 
   $("#povtor").addEventListener("click", otkryt);
+  $("#knopka-pamyatki").addEventListener("click", otkrytPamyatku);
+  $("#okno-zakryt").addEventListener("click", zakrytPamyatku);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") zakrytPamyatku(); });
   $("#galka-soglasie").addEventListener("change", (e) => { $("#knopka-soglasie").disabled = !e.target.checked; });
   $("#knopka-soglasie").addEventListener("click", async (e) => {
     e.target.disabled = true;
