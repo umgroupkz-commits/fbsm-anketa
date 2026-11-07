@@ -103,6 +103,15 @@ button[disabled] { opacity: .55; cursor: progress; }
 .soobshenie { padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 15px; }
 .soobshenie.ok { background: var(--shtamp-svet); color: var(--shtamp); }
 .soobshenie.oshibka { background: var(--vnimanie-svet); color: var(--oshibka); }
+.pamyatka summary { cursor: pointer; font-weight: 600; font-size: 17px; color: var(--shtamp); list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.pamyatka summary::-webkit-details-marker { display: none; }
+.pamyatka summary::after { content: "Открыть"; font-size: 14px; font-weight: 500; }
+.pamyatka[open] summary::after { content: "Свернуть"; }
+.pamyatka ol { margin: 16px 0 0; padding-left: 22px; display: grid; gap: 14px; }
+.pamyatka li b { display: block; }
+.pamyatka li p { margin: 2px 0 0; font-size: 15px; }
+.pamyatka a { color: var(--shtamp); font-weight: 500; overflow-wrap: anywhere; }
+.pamyatka .ssylki { display: grid; gap: 6px; margin-top: 6px; }
 .gotovo { text-align: center; padding: 28px 16px; }
 .gotovo strong { display: block; font-size: 20px; margin-bottom: 6px; color: var(--shtamp); }
 [hidden] { display: none !important; }
@@ -147,6 +156,13 @@ button[disabled] { opacity: .55; cursor: progress; }
     </section>
 
     <div id="osnova" hidden>
+      <details class="blok pamyatka" id="pamyatka" hidden>
+        <summary id="pamyatka-zagolovok">Первые шаги</summary>
+        <p class="tusk" id="pamyatka-vvod"></p>
+        <ol id="pamyatka-shagi"></ol>
+        <p class="tusk" id="pamyatka-red"></p>
+      </details>
+
       <section class="blok" aria-labelledby="z-stazh">
         <h2 id="z-stazh">Для стажировки</h2>
         <p class="tusk">Это нужно до первого дня стажировки.</p>
@@ -247,11 +263,40 @@ button[disabled] { opacity: .55; cursor: progress; }
     return div;
   }
 
+  // Памятку присылают только ответы на открытие и согласие; после сохранений блок остаётся как был.
+  function risovatPamyatku() {
+    if (!("pamyatka" in st)) return;
+    const p = st.pamyatka;
+    $("#pamyatka").hidden = !p;
+    if (!p) return;
+    $("#pamyatka-zagolovok").textContent = p.zagolovok;
+    $("#pamyatka-vvod").textContent = p.vvod;
+    $("#pamyatka-red").textContent = p.red ? `Памятка стажёру FBSM, ${p.red}` : "";
+    const ol = $("#pamyatka-shagi");
+    ol.replaceChildren();
+    for (const s of p.shagi) {
+      const li = document.createElement("li");
+      const b = document.createElement("b"); b.textContent = s.zagolovok; li.append(b);
+      for (const t of s.tekst) { const pr = document.createElement("p"); pr.textContent = t; li.append(pr); }
+      if (s.ssylki.length) {
+        const box = document.createElement("div"); box.className = "ssylki";
+        for (const l of s.ssylki) {
+          const a = document.createElement("a");
+          a.href = l.url; a.textContent = l.tekst; a.target = "_blank"; a.rel = "noopener noreferrer";
+          box.append(a);
+        }
+        li.append(box);
+      }
+      ol.append(li);
+    }
+  }
+
   function risovat() {
     if (st.imya) $("#privet").textContent = `Здравствуйте, ${st.imya}!`;
     risovatShkalu();
     $("#blok-soglasie").hidden = st.soglasie;
     $("#osnova").hidden = !st.soglasie;
+    risovatPamyatku();
     const sel = $("#vybor-banka");
     if (sel.options.length === 1) for (const b of st.banki) sel.add(new Option(b.name, b.id));
     for (const el of document.querySelectorAll("[data-pole]")) {
