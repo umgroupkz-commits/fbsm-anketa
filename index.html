@@ -94,6 +94,7 @@ button[disabled] { opacity: .55; cursor: progress; }
 .status.net { color: var(--tusk); font-weight: 500; }
 .knopka-fayl { grid-column: 2; grid-row: 1 / span 3; background: transparent; color: var(--shtamp); border-color: var(--shtamp); padding: 0 14px; font-size: 15px; position: relative; }
 .knopka-fayl.zagruzka { opacity: .6; pointer-events: none; }
+.knopka-blank { grid-column: 1; justify-self: start; min-height: 40px; margin-top: 4px; padding: 0 12px; font-size: 14px; background: transparent; color: var(--shtamp); border-color: var(--shtamp); }
 .knopka-fayl input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .zamechanie { grid-column: 1 / -1; background: var(--vnimanie-svet); color: var(--vnimanie); border-radius: 6px; padding: 8px 10px; font-size: 14px; }
 
@@ -260,6 +261,12 @@ button[disabled] { opacity: .55; cursor: progress; }
     s.className = "status " + (sdano ? "da" : "net");
     s.textContent = sdano ? (d.count > 1 ? `Сдано · файлов: ${d.count}` : "Сдано") : (d.neobyazatelno ? "Не обязательно — если есть" : "Не сдано");
     div.append(s);
+    if (d.blank) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "knopka-blank"; b.textContent = "Скачать бланк";
+      b.addEventListener("click", () => skachatBlank(b));
+      div.append(b);
+    }
     const lab = document.createElement("label"); lab.className = "knopka-fayl";
     lab.textContent = sdano ? (d.multi ? "Добавить" : "Заменить") : "Загрузить";
     const inp = document.createElement("input");
@@ -269,6 +276,28 @@ button[disabled] { opacity: .55; cursor: progress; }
     lab.append(inp);
     div.append(lab);
     return div;
+  }
+
+  // Бланк собирает Битрикс по карточке (ФИО, ИИН, должность) и отдаёт по личной ссылке.
+  async function skachatBlank(kn) {
+    const bylo = kn.textContent;
+    kn.disabled = true; kn.textContent = "Готовлю бланк…";
+    try {
+      const r = await zapros({ action: "blank" });
+      const bin = atob(r.b64);
+      const u = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+      const url = URL.createObjectURL(new Blob([u], { type: r.mime }));
+      const a = document.createElement("a");
+      a.href = url; a.download = r.name;
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      soobshit("Бланк скачан. Распечатайте, подпишите и загрузите фото сюда.", "ok");
+    } catch (er) {
+      soobshit(er.message, "oshibka");
+    } finally {
+      kn.disabled = false; kn.textContent = bylo;
+    }
   }
 
   // Флаг памятки приходит только с открытием и согласием; после сохранений кнопка остаётся как была.
